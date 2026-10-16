@@ -19,7 +19,7 @@ function render(){
 async function load(){state=await api('state');if(!state.tabs.some(t=>t.id===selected))selected=state.tabs[0]?.id;render();}
 async function command(path,body,label){if(working)return;working=true;try{await api(path,body);message(label);navigator.vibrate?.(25);}catch(e){message(e.message,true);}finally{working=false;}}
 $('search').oninput=render;$('stop').onclick=()=>command('stop',{},'Comando de parada enviado.');
-$('sync').onclick=async()=>{if(working)return;working=true;$('sync').disabled=true;message('Salvando abas e reiniciando o Soundux para preparar os atalhos…');try{await api('sync',{});await load();message('Abas e atalhos sincronizados.');}catch(e){message(e.message,true);}finally{working=false;$('sync').disabled=false;}};
+$('sync').onclick=async()=>{if(working)return;working=true;$('sync').disabled=true;message('Atualizando as abas e mantendo os atalhos desativados…');try{await api('sync',{});await load();message('Abas sincronizadas · controle sem teclado.');}catch(e){message(e.message,true);}finally{working=false;$('sync').disabled=false;}};
 load().then(()=>message('Conectado ao PC · pronto para tocar')).catch(e=>message(e.message,true));
 setInterval(()=>{if(!working)load().catch(e=>message(e.message,true));},10000);
 </script></html>
