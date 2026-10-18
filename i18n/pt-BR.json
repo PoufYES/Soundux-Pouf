@@ -1,0 +1,219 @@
+{
+  "settings": {
+    "stopHotkey": "Atalho para parar",
+    "allowMultipleOutputs": "Permitir vários aplicativos de saída",
+    "audioBackend": "Sistema de áudio",
+    "viewMode": {
+      "gridView": "Grade",
+      "launchpadMode": "Launchpad emulado",
+      "listView": "Lista",
+      "title": "Modo de visualização"
+    },
+    "theme": {
+      "light": "Claro",
+      "dark": "Escuro",
+      "system": "Sistema",
+      "title": "Tema"
+    },
+    "muteDuringPlayback": "Silenciar o microfone durante a reprodução",
+    "useAsDefaultDevice": "Usar como dispositivo padrão",
+    "minimizeToTray": "Minimizar para a bandeja do sistema",
+    "deleteToTrash": "Mover arquivos excluídos para a lixeira",
+    "allowOverlapping": "Permitir sons simultâneos",
+    "tabHotkeysOnly": "Atalhos apenas para a aba atual",
+    "title": "Configurações",
+    "language": "Idioma",
+    "pushToTalkKeys": "Teclas para pressionar e falar"
+  },
+  "empty": {
+    "noFavorites": "Você ainda não tem favoritos. Marque alguns sons como favoritos para exibi-los aqui.",
+    "noSounds": "Nenhum som compatível foi encontrado na pasta {path}. As extensões com suporte são mp3, wav, flac",
+    "nothingToShow": "Nada para mostrar"
+  },
+  "favorites": {
+    "favorite": "Favorito",
+    "title": "Favoritos"
+  },
+  "deleteSound": {
+    "delete": "Excluir",
+    "question": "Deseja excluir o som {soundName}?"
+  },
+  "removeTab": {
+    "question": "Deseja remover a aba {tabName}?"
+  },
+  "actions": {
+    "openFolder": "Abrir pasta",
+    "confirmation": "Confirmação",
+    "shuffle": "Embaralhar",
+    "off": "Desligado",
+    "on": "Ligado",
+    "no": "Não",
+    "yes": "Sim",
+    "playlistMode": "Modo de lista de reprodução",
+    "appPassThrough": "Retransmissão de áudio",
+    "play": "Tocar",
+    "reloadSounds": "Recarregar sons",
+    "addTab": "Adicionar aba",
+    "search": "Pesquisar",
+    "stop": "Parar",
+    "refresh": "Atualizar",
+    "dismiss": "Dispensar",
+    "ignore": "Ignorar"
+  },
+  "outputApp": "Aplicativo de saída",
+  "outputDevice": "Dispositivo de saída",
+  "welcome": {
+    "windowsGuide2": "como indicado em nosso site",
+    "windowsGuide1": "Siga as etapas de instalação {seenOnWebsite}",
+    "windowsDetected": "Detectamos que você está usando o Windows.",
+    "linuxGuide2": "Não é necessário alterar o dispositivo de entrada ou saída.",
+    "linuxGuide1": "Para tocar sons, selecione o aplicativo de saída no canto superior direito.",
+    "linuxDetected": "Detectamos que você está usando o Linux.",
+    "noTabs": "Você ainda não tem abas. Clique em {addTab} à direita para adicionar uma.",
+    "title": "Boas-vindas ao {programName}"
+  },
+  "errors": {
+    "0": "Falha ao tocar",
+    "1": "Falha ao alterar a posição de reprodução",
+    "2": "Falha ao pausar",
+    "3": "Falha ao repetir",
+    "4": "Falha ao retomar a reprodução",
+    "5": "Falha ao mover para a saída de áudio",
+    "6": "Som não encontrado",
+    "7": "A pasta não existe",
+    "8": "A aba não existe",
+    "9": "Falha ao definir atalho",
+    "10": "Falha ao iniciar a retransmissão de áudio",
+    "11": "Falha ao restaurar a saída de áudio",
+    "12": "Falha ao restaurar a retransmissão de áudio",
+    "13": "Falha ao restaurar a entrada padrão",
+    "14": "Falha ao definir a entrada padrão",
+    "15": "youtube-dl não encontrado",
+    "16": "URL inválida",
+    "17": "Falha ao analisar JSON do youtube-dl",
+    "18": "Falha desconhecida no youtube-dl",
+    "19": "Falha ao excluir o arquivo",
+    "20": "Falha ao silenciar",
+    "21": "Falha ao definir o volume personalizado",
+    "backendFunctionMissing": "Função indisponível no sistema de áudio: {functionName}",
+    "error": "Erro"
+  },
+  "windows": {
+    "restartAsAdmin": "Reiniciar como administrador",
+    "administrativePrivilegesNeeded": "São necessárias permissões de administrador!",
+    "automaticSetup": "Configuração automática",
+    "selectMic": "Selecione seu microfone para continuar",
+    "virtualAudioCableMisconfiguration": "Detectamos que o Virtual Audio Cable não está configurado corretamente.",
+    "badConfiguration": "Configuração incorreta detectada",
+    "setUpNow": "Configurar agora",
+    "detectedMisconfiguration": "Configuração incorreta do VB-Cable detectada"
+  },
+  "systemInfo": {
+    "copyToClipboard": "Copiar para a área de transferência",
+    "description": "Inclua estas informações ao relatar um erro",
+    "title": "Informações do sistema"
+  },
+  "update": {
+    "ignore": "Ignorar",
+    "updateNow": "Atualizar agora",
+    "latestVersion": "Versão mais recente",
+    "yourVersion": "Sua versão",
+    "title": "Uma atualização está disponível!"
+  },
+  "downloader": {
+    "close": "Fechar",
+    "success": "Baixado com sucesso: {title}",
+    "startDownload": "Iniciar download",
+    "cancelDownload": "Cancelar download",
+    "eta": "Tempo restante",
+    "converting": "Convertendo",
+    "progress": "Progresso",
+    "placeholder": "Insira um link",
+    "installNow": "Instalar agora",
+    "notAvailable": "{youtube-dl} e/ou {ffmpeg} não estão instalados",
+    "title": "Downloads"
+  },
+  "sort": {
+    "alphabeticalDescending": "Nome: Z a A",
+    "alphabeticalAscending": "Nome: A a Z",
+    "modifiedDescending": "Mais recentes primeiro",
+    "modifiedAscending": "Mais antigos primeiro",
+    "title": "Classificar"
+  },
+  "search": {
+    "playSelected": "{shift} + {enter} para tocar o som selecionado",
+    "jumpToSelected": "{enter} para ir até o som selecionado",
+    "changeSelection": "Use as {arrowKeys} para mudar a seleção",
+    "noResultsFound": "Nenhum resultado encontrado",
+    "typeToSearch": "Digite para pesquisar"
+  },
+  "input": {
+    "arrowKeys": "setas do teclado",
+    "rightClick": "Botão direito do mouse",
+    "leftClick": "Botão esquerdo do mouse",
+    "space": "Espaço",
+    "enter": "Enter",
+    "shift": "Shift",
+    "ctrl": "CTRL"
+  },
+  "appPassThrough": {
+    "noOutputSelected": "Você deve selecionar um aplicativo de saída",
+    "noAppsFound": "Nenhum aplicativo encontrado",
+    "title": "Retransmissão de áudio de aplicativos"
+  },
+  "volume": {
+    "sync": "Sincronizar volumes",
+    "remote": "Volume remoto",
+    "local": "Volume local"
+  },
+  "help": {
+    "viewSourceCode": "Ver o código fonte",
+    "joinOurDiscord": "Junte-se ao nosso Discord",
+    "visitOurWebsite": "Visite o nosso site",
+    "supportUs": "Apoie-nos",
+    "reloadSounds": {
+      "reload": "recarregar a aba atual",
+      "text": "Pressione {ctrl} + {r} para {reload}"
+    },
+    "appPassThrough": {
+      "show": "mostrar a retransmissão de áudio de aplicativos",
+      "text": "Pressione {ctrl} + {g} para {show}"
+    },
+    "togglePlayback": {
+      "playPause": "pausar ou retomar os sons em reprodução",
+      "text": "Pressione {space} para {playPause}"
+    },
+    "options": {
+      "moreOptions": "mostrar mais opções",
+      "text": "{rightClick} para {moreOptions}"
+    },
+    "play": {
+      "play": "tocar",
+      "text": "{leftClick} para {play}"
+    },
+    "search": {
+      "search": "pesquisar",
+      "text": "Pressione {ctrl} + {f} para {search}"
+    },
+    "title": "Ajuda"
+  },
+  "hotkeys": {
+    "setFor": "Definir atalho para {soundName}",
+    "hotkey": "Atalho",
+    "title": "Definir atalho"
+  },
+  "noAudioBackend": {
+    "choose": "Por favor, escolha uma opção",
+    "notDetected": "Não foi possível detectar um sistema de áudio compatível.",
+    "title": "Nenhum sistema de áudio encontrado"
+  },
+  "customVolume": {
+    "setFor": "Definir volume para {soundName}",
+    "context": "Definir volume personalizado"
+  },
+  "tray": {
+    "exit": "Sair",
+    "hide": "Ocultar janela",
+    "show": "Mostrar janela"
+  }
+}

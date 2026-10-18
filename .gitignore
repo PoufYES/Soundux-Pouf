@@ -8,4 +8,9 @@ analyze
 node_modules
 yarn.lock
 package.json
+!/remote-control/package.json
 compile_commands.json
+/soundux.exe
+/tools/
+/dist/
+/remote-control/__pycache__/

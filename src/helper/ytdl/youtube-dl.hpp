@@ -1,7 +1,10 @@
 #pragma once
 #include <json.hpp>
 #include <optional>
+#pragma push_macro("UNICODE")
+#undef UNICODE
 #include <process.hpp>
+#pragma pop_macro("UNICODE")
 #include <regex>
 #include <string>
 

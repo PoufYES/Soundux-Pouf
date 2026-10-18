@@ -15,10 +15,51 @@
 #include <helper/misc/misc.hpp>
 #include <shellapi.h>
 #include <windows.h>
+#include <winhttp.h>
+#include <fstream>
 #endif
 
 namespace Soundux::Objects
 {
+#if defined(_WIN32)
+    namespace {
+        void publishRemoteState() {
+            static std::string previous;
+            const auto state = nlohmann::json{{"data", Globals::gData}, {"settings", Globals::gSettings}}.dump();
+            const auto dir = std::filesystem::path(std::getenv("LOCALAPPDATA")) / "Soundux-Pouf";
+            const auto target = dir / "remote-state.json";
+            if (state == previous && std::filesystem::exists(target)) return;
+            std::filesystem::create_directories(dir);
+            const auto temporary = dir / "remote-state.tmp";
+            std::ofstream stream(temporary, std::ios::binary | std::ios::trunc);
+            stream << state;
+            stream.close();
+            if (!stream || !MoveFileExW(temporary.c_str(), target.c_str(), MOVEFILE_REPLACE_EXISTING))
+                throw std::runtime_error("Nao foi possivel atualizar o controle remoto");
+            previous = state;
+        }
+        struct RemoteHttpCloser { void operator()(void *handle) const { if(handle) WinHttpCloseHandle(handle); } };
+        using RemoteHttpHandle = std::unique_ptr<void, RemoteHttpCloser>;
+        nlohmann::json remoteRequest(const std::string &path, const nlohmann::json &body) {
+            if (path != "addresses" && path != "devices" && path != "invite" && path != "revoke")
+                throw std::runtime_error("Comando remoto invalido");
+            RemoteHttpHandle session(WinHttpOpen(L"Soundux Remote", WINHTTP_ACCESS_TYPE_NO_PROXY, nullptr, nullptr, 0));
+            if (!session) throw std::runtime_error("Controle indisponivel");
+            WinHttpSetTimeouts(session.get(), 1000, 1000, 1000, 1000);
+            RemoteHttpHandle connection(WinHttpConnect(session.get(), L"127.0.0.1", 3210, 0));
+            const auto route = L"/admin/" + std::wstring(path.begin(), path.end());
+            const bool post = path == "invite" || path == "revoke";
+            RemoteHttpHandle request(connection ? WinHttpOpenRequest(connection.get(), post ? L"POST" : L"GET", route.c_str(), nullptr, WINHTTP_NO_REFERER, WINHTTP_DEFAULT_ACCEPT_TYPES, 0) : nullptr);
+            const auto content = post ? body.dump() : std::string();
+            const wchar_t *headers = L"Origin: http://127.0.0.1:3210\r\nContent-Type: application/json\r\n";
+            if (!request || !WinHttpSendRequest(request.get(), headers, DWORD(-1L), post ? const_cast<char *>(content.data()) : nullptr, static_cast<DWORD>(content.size()), static_cast<DWORD>(content.size()), 0) || !WinHttpReceiveResponse(request.get(), nullptr))
+                throw std::runtime_error("Aguardando o controle iniciar");
+            std::string response; char buffer[8192]; DWORD count = 0;
+            do { if (!WinHttpReadData(request.get(), buffer, sizeof(buffer), &count)) throw std::runtime_error("Falha ao receber o controle"); response.append(buffer, count); } while(count);
+            return nlohmann::json::parse(response);
+        }
+    }
+#endif
     void WebView::setup()
     {
         Window::setup();
@@ -30,8 +71,8 @@ namespace Soundux::Objects
         webview->enableContextMenu(std::getenv("SOUNDUX_DEBUG") != nullptr); // NOLINT
 
 #ifdef _WIN32
-        char rawPath[MAX_PATH];
-        GetModuleFileNameA(nullptr, rawPath, MAX_PATH);
+        wchar_t rawPath[32768];
+        GetModuleFileNameW(nullptr, rawPath, 32768);
 
         auto path = std::filesystem::canonical(rawPath).parent_path() / "dist" / "index.html";
         tray = std::make_shared<Tray::Tray>("soundux-tray", IDI_ICON1);
@@ -71,7 +112,7 @@ namespace Soundux::Objects
         webview->setUrl("file:///embedded/" + path.string());
 #endif
 #else
-        webview->setUrl("file://" + path.string());
+        webview->setUrl("file://" + path.u8string());
 #endif
     }
     void WebView::show()
@@ -81,6 +122,26 @@ namespace Soundux::Objects
     void WebView::exposeFunctions()
     {
         webview->expose(Webview::Function("getSettings", []() { return Globals::gSettings; }));
+        // Apply the UI locale to native menus immediately, including after a saved choice is loaded.
+        webview->expose(Webview::Function("updateTrayLanguage", [this](const nlohmann::json &text) {
+            translations.exit = text.at("exit").get<std::string>();
+            translations.hide = text.at("hide").get<std::string>();
+            translations.show = text.at("show").get<std::string>();
+            translations.settings = text.at("settings").get<std::string>();
+            translations.tabHotkeys = text.at("tabHotkeys").get<std::string>();
+            translations.muteDuringPlayback = text.at("muteDuringPlayback").get<std::string>();
+            const auto entries = tray->getEntries();
+            if (entries.size() < 3) return;
+            entries.at(0)->setText(translations.exit);
+            entries.at(1)->setText(webview->isHidden() ? translations.show : translations.hide);
+            entries.at(2)->setText(translations.settings);
+            const auto submenu = std::dynamic_pointer_cast<Tray::Submenu>(entries.at(2));
+            if (submenu && submenu->getEntries().size() >= 2)
+            {
+                submenu->getEntries().at(0)->setText(translations.muteDuringPlayback);
+                submenu->getEntries().at(1)->setText(translations.tabHotkeys);
+            }
+        }));
         webview->expose(Webview::Function("isLinux", []() {
 #if defined(__linux__)
             return true;
@@ -174,6 +235,27 @@ namespace Soundux::Objects
         webview->expose(Webview::Function("getOutputs", [this]() { return getOutputs(); }));
 #endif
 #if defined(_WIN32)
+        const auto remoteAction = [](const wchar_t *action) {
+            wchar_t exePath[32768];
+            const auto length = GetModuleFileNameW(nullptr, exePath, 32768);
+            if (!length || length >= 32768) throw std::runtime_error("Nao foi possivel localizar o Soundux");
+            const auto script = std::filesystem::path(exePath).parent_path() / L"remote-control" / L"sidebar-action.ps1";
+            if (!std::filesystem::exists(script)) throw std::runtime_error("Controle web nao encontrado");
+            const std::wstring args = L"-NoProfile -STA -ExecutionPolicy Bypass -File \"" + script.wstring() + L"\" -Action " + action;
+            SHELLEXECUTEINFOW info{};
+            info.cbSize = sizeof(info);
+            info.fMask = SEE_MASK_FLAG_NO_UI;
+            info.lpFile = L"powershell.exe";
+            info.lpParameters = args.c_str();
+            info.nShow = SW_HIDE;
+            return ShellExecuteExW(&info) != FALSE;
+        };
+        webview->expose(Webview::Function("startRemoteControl", [remoteAction]() { publishRemoteState(); return remoteAction(L"start"); }));
+        webview->expose(Webview::Function("saveRemoteState", []() { publishRemoteState(); return true; }));
+        webview->expose(Webview::Function("remoteControlRequest", [](const std::string &path, const nlohmann::json &body) {
+            try { return remoteRequest(path, body); }
+            catch (const std::exception &error) { return nlohmann::json{{"error", error.what()}}; }
+        }));
         webview->expose(Webview::Function("openUrl", [](const std::string &url) {
             ShellExecuteA(nullptr, nullptr, url.c_str(), nullptr, nullptr, SW_SHOW);
         }));
@@ -286,8 +368,9 @@ namespace Soundux::Objects
     {
         if (Globals::gSettings.minimizeToTray)
         {
-            tray->getEntries().at(1)->setText(translations.show);
             webview->hide();
+            const auto entries = tray->getEntries();
+            if (entries.size() > 1) entries.at(1)->setText(translations.show);
             return true;
         }
         return false;
@@ -339,7 +422,11 @@ namespace Soundux::Objects
                                                 Webview::JavaScriptFunction("window.getTranslation", "tray.exit"))
                                             .get();
 
+#if defined(_WIN32)
+                    webview->dispatchMessage([this] { setupTray(); });
+#else
                     setupTray();
+#endif
                 });
 
                 once = true;
@@ -348,10 +435,15 @@ namespace Soundux::Objects
     }
     void WebView::setupTray()
     {
-        tray->addEntry(Tray::Button(translations.exit, [this]() {
-            tray->exit();
-            webview->exit();
-        }));
+#if defined(_WIN32)
+        tray->setClickCallback([this] {
+            webview->show();
+            const auto entries = tray->getEntries();
+            if (entries.size() > 1) entries.at(1)->setText(translations.hide);
+        });
+#endif
+        // mainLoop owns tray cleanup; exit must also work when minimizeToTray is enabled.
+        tray->addEntry(Tray::Button(translations.exit, [this]() { webview->exit(); }));
 
         tray->addEntry(Tray::Button(webview->isHidden() ? translations.show : translations.hide, [this]() {
             if (!webview->isHidden())

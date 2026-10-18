@@ -6,10 +6,10 @@
 #include <fstream>
 #include <optional>
 
-#pragma push_macro("UNICOCDE")
+#pragma push_macro("UNICODE")
 #undef UNICODE
 #include <process.hpp>
-#pragma pop_macro("UNICOCDE")
+#pragma pop_macro("UNICODE")
 
 #include <regex>
 #include <system_error>

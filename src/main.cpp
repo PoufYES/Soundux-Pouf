@@ -13,6 +13,7 @@
 #include <Windows.h>
 #include <helper/misc/misc.hpp>
 #include <shellapi.h>
+#include <filesystem>
 
 int __stdcall WinMain([[maybe_unused]] HINSTANCE hInstrance, [[maybe_unused]] HINSTANCE prevInstance,
                       [[maybe_unused]] LPSTR winArgs, [[maybe_unused]] int argc)
@@ -25,6 +26,19 @@ int main(int argc, char **arguments)
     using namespace Soundux::Enums;   // NOLINT
 
 #if defined(_WIN32)
+    wchar_t modulePath[32768];
+    if (GetModuleFileNameW(nullptr, modulePath, 32768))
+    {
+        const auto tools = std::filesystem::path(modulePath).parent_path() / L"tools";
+        std::wstring oldPath(32768, L'\0');
+        const auto size = GetEnvironmentVariableW(L"PATH", oldPath.data(), static_cast<DWORD>(oldPath.size()));
+        if (size < oldPath.size())
+        {
+            oldPath.resize(size);
+            const auto searchPath = tools.wstring() + L";" + oldPath;
+            SetEnvironmentVariableW(L"PATH", searchPath.c_str());
+        }
+    }
     auto **arguments = CommandLineToArgvW(GetCommandLineW(), &argc);
 
     std::vector<std::string> args;

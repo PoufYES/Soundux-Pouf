@@ -1,0 +1,19 @@
+{
+  "name": "remote-control",
+  "version": "1.0.0",
+  "scripts": {
+    "test": "node --test pairing.test.mjs server.test.mjs network.test.mjs",
+    "test:native-settings": "node --test native-settings.test.mjs"
+  },
+  "type": "module",
+  "dependencies": {
+    "multicast-dns": "7.2.5",
+    "qrcode": "1.5.4"
+  },
+  "private": true,
+  "devDependencies": {
+    "jsqr": "1.4.0",
+    "playwright-core": "1.64.1",
+    "pngjs": "7.0.0"
+  }
+}

@@ -1,8 +1,0 @@
-Stack trace (most recent call last):
-#6    Object "", at 00007FFDC8A5DDA7, in BaseThreadInitThunk
-#5    Object "", at 00007FF630E6F2A6, in  ?? 
-#4    Object "", at 00007FF630D15D61, in  ?? 
-#3    Object "", at 00007FF630D29192, in  ?? 
-#2    Object "", at 00007FF630CE7DE5, in  ?? 
-#1    Object "", at 00007FF630E6FC8C, in  ?? 
-#0    Object "", at 00007FFDC7BB408A, in RaiseException

@@ -1,0 +1,14 @@
+﻿{
+  "badge": "Indicador", "close": "Fechar",
+  "dataIterator": {"noResultsText": "Nenhum resultado encontrado", "loadingText": "Carregando itens…"},
+  "dataTable": {"itemsPerPageText": "Linhas por página:", "sortBy": "Ordenar por", "ariaLabel": {"sortDescending": "Ordem decrescente.", "sortAscending": "Ordem crescente.", "sortNone": "Sem ordenação.", "activateNone": "Ative para remover a ordenação.", "activateDescending": "Ative para ordenar de forma decrescente.", "activateAscending": "Ative para ordenar de forma crescente."}},
+  "dataFooter": {"itemsPerPageText": "Itens por página:", "itemsPerPageAll": "Todos", "nextPage": "Próxima página", "prevPage": "Página anterior", "firstPage": "Primeira página", "lastPage": "Última página", "pageText": "{0}–{1} de {2}"},
+  "datePicker": {"itemsSelected": "{0} selecionados", "nextMonthAriaLabel": "Próximo mês", "nextYearAriaLabel": "Próximo ano", "prevMonthAriaLabel": "Mês anterior", "prevYearAriaLabel": "Ano anterior"},
+  "noDataText": "Nenhum dado disponível",
+  "carousel": {"prev": "Imagem anterior", "next": "Próxima imagem", "ariaLabel": {"delimiter": "Imagem {0} de {1} do carrossel"}},
+  "calendar": {"moreEvents": "Mais {0}"},
+  "fileInput": {"counter": "{0} arquivos", "counterSize": "{0} arquivos ({1} no total)"},
+  "timePicker": {"am": "AM", "pm": "PM"},
+  "pagination": {"ariaLabel": {"wrapper": "Navegação de páginas", "next": "Próxima página", "previous": "Página anterior", "page": "Ir para a página {0}", "currentPage": "Página atual, página {0}"}},
+  "rating": {"ariaLabel": {"icon": "Avaliação {0} de {1}"}}
+}

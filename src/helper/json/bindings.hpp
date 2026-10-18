@@ -149,27 +149,32 @@ namespace nlohmann
             };
         }
 
-        template <typename T> static void get_to_safe(const json &j, const std::string &key, T &member) noexcept
+        template <typename T> static void get_to_safe(const json &j, const std::string &key, T &member)
         {
-            if (j.find(key) != j.end())
+            const auto field = j.find(key);
+            if (field == j.end()) return;
+            try
             {
                 if constexpr (Soundux::traits::is_optional<T>::value)
                 {
-                    if (j.at(key).type_name() == nlohmann::basic_json(typename T::value_type{}).type_name())
+                    if (field->is_null())
                     {
-                        if (!j.at(key).is_null())
-                        {
-                            member = j.at(key).get<typename T::value_type>();
-                        }
+                        member.reset();
+                    }
+                    else if (std::string(field->type_name()) == json(typename T::value_type{}).type_name())
+                    {
+                        member = field->template get<typename T::value_type>();
                     }
                 }
-                else
+                else if (std::string(field->type_name()) == json(T{}).type_name())
                 {
-                    if (j.at(key).type_name() == nlohmann::basic_json(T{}).type_name())
-                    {
-                        j.at(key).get_to(member);
-                    }
+                    // Parse into a temporary: invalid array members must not leave a partial value.
+                    member = field->template get<T>();
                 }
+            }
+            catch (const json::exception &)
+            {
+                // A malformed setting must not terminate the native UI.
             }
         }
 

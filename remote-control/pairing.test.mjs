@@ -1,0 +1,35 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {mkdtempSync,rmSync,readFileSync} from 'node:fs';
+import {tmpdir} from 'node:os';
+import {join} from 'node:path';
+import {createPairing} from './pairing.mjs';
+
+test('pairing expires, is single use, persists and can be revoked', t=>{
+ const dir=mkdtempSync(join(tmpdir(),'soundux-pair-'));
+ t.after(()=>rmSync(dir,{recursive:true,force:true}));
+ const file=join(dir,'devices.json');let now=1000;
+ const pairing=createPairing(file,()=>now);
+ assert.equal(pairing.authorized(),false);
+ assert.equal(pairing.authorized('soundux=old-key'),false);
+ assert.equal(pairing.pair('unknown','Phone'),null);
+ const expired=pairing.invite();now+=120000;
+ assert.equal(pairing.pair(expired.code,'Phone'),null);
+ const old=pairing.invite(),current=pairing.invite();
+ assert.equal(pairing.pair(old.code,'Phone'),null);
+ assert.equal(pairing.pair('wrong','Phone'),null);
+ const secret=pairing.pair(current.code,'My phone');
+ assert.ok(secret);
+ assert.equal(pairing.pair(current.code,'Other phone'),null);
+ assert.equal(readFileSync(file,'utf8').includes(secret),false);
+ const cookie=`other=x; soundux_device=${secret}; another=y`;
+ assert.equal(pairing.authorized(cookie),true);
+ const restored=createPairing(file,()=>now);
+ assert.equal(restored.authorized(cookie),true);
+ restored.revoke(restored.list()[0].id);
+ assert.equal(restored.authorized(cookie),false);
+ assert.equal(createPairing(file,()=>now).authorized(cookie),false);
+ const next=restored.pair(restored.invite().code,'New phone');
+ now+=180*86400000;
+ assert.equal(restored.authorized(`soundux_device=${next}`),false);
+});
